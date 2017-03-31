@@ -1,6 +1,13 @@
 ﻿package name.lxm.targets.ui;
 
 public class Dabarenyuan extends Tubiao{
+	private int seqbianhao;
+	public int getSeqbianhao() {
+		return seqbianhao;
+	}
+	public void setSeqbianhao(int seqbianhao) {
+		this.seqbianhao = seqbianhao;
+	}
 	private int bianhao;
 	private String xingming;
 	private String alert;

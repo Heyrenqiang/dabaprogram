@@ -193,12 +193,12 @@ public class Mainframe extends JFrame implements WirelessListener {
 
 	private class Fuweilistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			setsysstate(tuichustaten);
-			chushihuabutton.setEnabled(true);
-			qidongbutton.setEnabled(false);
-			tingzhibutton.setEnabled(false);
+			setsysstate(tuichustaten);//系统切换为退出状态
+			chushihuabutton.setEnabled(true);//初始化按钮可用
+			qidongbutton.setEnabled(false);//启动按钮不可用
+			tingzhibutton.setEnabled(false);//停止按钮不可用
 			//commandlistenerInterface.systemReset();
-			commandstatelistener.sysReset();
+			commandstatelistener.sysReset();//向通讯模块发送系统复位命令
 		}
 	}
 
@@ -207,24 +207,26 @@ public class Mainframe extends JFrame implements WirelessListener {
 		public void actionPerformed(ActionEvent e) {
 			if (tuichustate) {
 				//commandlistenerInterface.systemInitialize();
-				commandstatelistener.sysInitialize();
-				systemdatainit();// 数据初始化
-				huitupanel.displayzhengti(tubiaos, pointnum);
-				tmuiControlPanel.getPanel_7().removeAll();
-				tmuiControlPanel.getPanel_7().repaint();
+				commandstatelistener.sysInitialize();//向通讯模块发送系统初始化命令
+				systemdatainit();// 界面单独运行时数据初始化，读取文本中的数据
+				huitupanel.displayzhengti(tubiaos, pointnum);//初次化地图并显示，将图标显示出来
+				tmuiControlPanel.getPanel_7().removeAll();//移除分组面板的小组界面
+				tmuiControlPanel.getPanel_7().repaint();//对分组面板进行重绘
 				if (reflesh.isAlive()) {
 				} else {
 					reflesh.start();
-				}
+				}//启动一个线程不断更新数据，这是在单独界面模块用来测试用的
 				// 获取分组信息，将分组信息作为参数传给通讯模块
-				Bazhiz[] bazhizs = new Bazhiz[Guanlifenzu.getZushu()];
+				Bazhiz[] bazhizs = new Bazhiz[Guanlifenzu.getZushu()];//创建一个靶子组数组，数组长度为当前靶子组的个数
 				for (int i = 0; i < bazhizs.length; i++) {
 					bazhizs[i] = Guanlifenzu.getBazhizs()[i + 1];
-				}
+				}//获取当前的所有靶子组并赋值给上面新创建的靶子组数组
 				//commandlistenerInterface.groupinfoUpdate(bazhizs);
-				tmuiTargetStatusPanel.statusChanged("系统初始化");
-				setsysstate(chushihuastaten);
-				chushihuabutton.setEnabled(false);
+				
+				tmuiTargetStatusPanel.statusChanged("系统初始化");//更新系统消息
+				setsysstate(chushihuastaten);//将系统状态设置为初始化状态
+				chushihuabutton.setEnabled(false);//初始化按钮不可用
+				tmuiControlPanel.getSavegroupButton().setEnabled(true);//保存分组按钮可用
 			} else {
 				System.out.println("请先复位");
 			}
@@ -236,21 +238,20 @@ public class Mainframe extends JFrame implements WirelessListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO 自动生成的方法存根
-			if (jiuxustate) {
-				System.out.println("dsjahdashh");
-				tmuiControlPanel.getTimeoutthread().interrupt();
-				setsysstate(yunxinstaten);
+			if (jiuxustate) {//如果是在就绪状态下按启动
+				tmuiControlPanel.getTimeoutthread().interrupt();//中断一个线程，这个线程是用来检测系统是否要进入睡眠状态的
+				setsysstate(yunxinstaten);//设置系统状态为运行状态
 				//commandlistenerInterface.systemStart();
-				commandstatelistener.sysStart();
-				qidongbutton.setEnabled(false);
-				tingzhibutton.setEnabled(true);
-			} else if (shuimianstate) {
-				setsysstate(jiuxustaten);
-				qidongbutton.setText("启动");
+				commandstatelistener.sysStart();//向通讯模块发送系统启动命令
+				qidongbutton.setEnabled(false);//启动按钮不可用
+				tingzhibutton.setEnabled(true);//停止按钮可用
+			} else if (shuimianstate) {//如果是在睡眠状态下按启动按钮
+				setsysstate(jiuxustaten);//系统进入就绪状态
+				qidongbutton.setText("启动");//将启动按钮的名字设置为启动
 				//commandlistenerInterface.systemReady();
-				commandstatelistener.sysReady();
+				commandstatelistener.sysReady();//向通讯模块发送系统已就绪命令
 				tmuiControlPanel.setTimeoutthread(new Timeoutthread());
-				tmuiControlPanel.getTimeoutthread().start();
+				tmuiControlPanel.getTimeoutthread().start();//启动一个新的线程来检测系统是否进入睡眠状态
 			} else {
 				System.out.println("分组还未就绪");
 			}
@@ -261,21 +262,26 @@ public class Mainframe extends JFrame implements WirelessListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO 自动生成的方法存根
-			if (yunxinstate == true) {
-				setsysstate(jiuxustaten);
+			if (yunxinstate == true) {//如果是在运行状态下
+				setsysstate(jiuxustaten);//系统进入就绪状态
 				tmuiControlPanel.setTimeoutthread(new Timeoutthread());
-				tmuiControlPanel.getTimeoutthread().start();
+				tmuiControlPanel.getTimeoutthread().start();//开启一个新的线程用来检测系统是否进入睡眠状态
 //				commandlistenerInterface.systemStop();
-				qidongbutton.setEnabled(true);
-				tingzhibutton.setEnabled(false);
+				commandstatelistener.sysStop();//向通讯模块发送停止命令
+				qidongbutton.setEnabled(true);//启动按钮不可用
+				tingzhibutton.setEnabled(false);//停止按钮不可用
 			} else {
 				System.out.println("现在不是运行状态");
 			}
 		}
 	}
 
+	/**
+	 * @author Administrator 
+	 * 全选，即选中所有靶子
+	 *
+	 */
 	public class Quanxuanlistener implements ActionListener {
-
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO 自动生成的方法存根
@@ -292,23 +298,30 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 给选中的靶子添加分组
+	 *
+	 */
 	private class TianjiafenzuListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if (chushihuastate) {
-
+			// TODO 自动生成的方法存根
+			if (chushihuastate) {//如果是在初始化状态下
 				String strbazhi = getXuanzhong();// 获取选中的靶子转化为字符串形式
+				String stringbianhao=getXuanzhongbiaohao();
 				Tianjiafenzumsgbox tianjiafenzumsgbox = new Tianjiafenzumsgbox(Guanlifenzu.getZushu());// 创建对话框
-				tianjiafenzumsgbox.getTextField().setText(strbazhi);// 设置对话框内容
+				tianjiafenzumsgbox.getTextField().setText(stringbianhao);// 设置对话框内容
 				tianjiafenzumsgbox.setVisible(true);// 显示对话框
 				tianjiafenzumsgbox.getButton().addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						tianjiafenzumsgbox.dispose();// 关闭对话框
 					}
 				});
+				//在弹出的对话中点击确定后作以下操作，把选中的靶子天剑到分组
 				tianjiafenzumsgbox.getBtnNewButton().addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						// 获取对话框的内容
-						String[] mStrings = tianjiafenzumsgbox.getTextField().getText().split(",");
+						String[] mStrings = strbazhi.split(",");
 						int j = mStrings.length;
 						int[] a = new int[mStrings.length];
 						// 将选中的靶子提取出来成为一个参数（靶子组）
@@ -318,7 +331,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 							}
 							Bazhi[] bazhiijk = new Bazhi[j];
 							for (int i = 0; i < j; i++) {
-								bazhiijk[i] = bazhis[a[i] - 1];
+								bazhiijk[i] = bazhis[a[i]];
 							}
 							System.out.println(bazhiijk.length);
 							Guanlifenzu.creatfenzu(bazhiijk);// 创建分组
@@ -329,6 +342,8 @@ public class Mainframe extends JFrame implements WirelessListener {
 							// Guanlifenzu.creatnewpanel();
 							Guanlifenzu.showpanel();
 						}
+						//Guanlifenzu.groupinfoUpdate();//更新分组信息到通讯模块
+						tmuiControlPanel.getSavegroupButton().setEnabled(true);//保存分组按钮可用
 						tianjiafenzumsgbox.dispose();
 					}
 				});
@@ -337,16 +352,23 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 将选中的靶子添加到已有分组
+	 *
+	 */
 	private class Tianjiadaozulistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			if (chushihuastate) {
-
+			// TODO 自动生成的方法存根
+			if (chushihuastate) {//如果是在初始化状态下
 				String string = getXuanzhong();
-				Tianjiadaozumsgbox tianjiadaozumsgbox = new Tianjiadaozumsgbox(Guanlifenzu.getZushu(), string);
+				String stringbianhao=getXuanzhongbiaohao();
+				Tianjiadaozumsgbox tianjiadaozumsgbox = new Tianjiadaozumsgbox(Guanlifenzu.getZushu(), stringbianhao);
 				tianjiadaozumsgbox.setVisible(true);
+				//在弹出的对话框中点击确定以后做以下操作，将选中的靶子添加到某一组
 				tianjiadaozumsgbox.getBtnNewButton().addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
-						String[] mStrings = tianjiadaozumsgbox.getTextField().getText().split(",");
+						String[] mStrings = string.split(",");
 						int j = mStrings.length;
 						int[] a = new int[mStrings.length];
 						if (!mStrings[0].equals("")) {
@@ -355,7 +377,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 							}
 							Bazhi[] bazhiijk = new Bazhi[j];
 							for (int i = 0; i < j; i++) {
-								bazhiijk[i] = bazhis[a[i] - 1];
+								bazhiijk[i] = bazhis[a[i]];
 							}
 							Guanlifenzu.tianjiaDaozu((int) tianjiadaozumsgbox.getComboBox().getSelectedItem(), bazhiijk);
 							Guanlifenzu.showpanel();
@@ -364,6 +386,8 @@ public class Mainframe extends JFrame implements WirelessListener {
 							Guanlifenzu.tianjiaDaozu((int) tianjiadaozumsgbox.getComboBox().getSelectedItem(), bazhikji);
 							Guanlifenzu.showpanel();
 						}
+						//Guanlifenzu.groupinfoUpdate();//更新分组信息到通讯模块
+						tmuiControlPanel.getSavegroupButton().setEnabled(true);//保存分组按钮可用
 						tianjiadaozumsgbox.dispose();
 					}
 				});
@@ -372,7 +396,6 @@ public class Mainframe extends JFrame implements WirelessListener {
 						tianjiadaozumsgbox.dispose();
 					}
 				});
-
 			}
 		}
 	}
@@ -384,16 +407,18 @@ public class Mainframe extends JFrame implements WirelessListener {
 	 */
 	private class Tuichufenzulistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			if (chushihuastate) {
-
 				String strbazhi = getXuanzhong();
 				int[] a = Toolsfunction.str2num(strbazhi);
 				Bazhi[] bazhisijk = new Bazhi[a.length];
 				for (int i = 0; i < a.length; i++) {
-					bazhisijk[i] = bazhis[a[i] - 1];
+					bazhisijk[i] = bazhis[a[i]];
 				}
 				Guanlifenzu.tuichuFenzhu(bazhisijk);
 				Guanlifenzu.showpanel();
+				//Guanlifenzu.groupinfoUpdate();//更新分组信息到通讯模块
+				tmuiControlPanel.getSavegroupButton().setEnabled(true);//保存分组按钮可用
 			}
 		}
 	}
@@ -405,6 +430,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 	 */
 	private class Fangdalistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			for (int i = 0; i < pointnum; i++) {
 				tubiaos[i].setPointx(
 						(int) (1.1 * (tubiaos[i].getPointx() - huitupanel.getWidth() / 2) + huitupanel.getWidth() / 2));
@@ -415,8 +441,14 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 地图缩小
+	 *
+	 */
 	private class Suoxiaolistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			for (int i = 0; i < pointnum; i++) {
 				tubiaos[i].setPointx(
 						(int) ((tubiaos[i].getPointx() - huitupanel.getWidth() / 2) / 1.1 + huitupanel.getWidth() / 2));
@@ -427,13 +459,17 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 地图拖拽
+	 *
+	 */
 	private class Tuozhuailistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-
+			// TODO 自动生成的方法存根
 			tuozhuai = !tuozhuai;
 			dianjifangda = false;
 			dianjisuoxiao = false;
-
 			if (tuozhuai) {
 
 				huitupanel.setCursor(cutuozhuai);
@@ -448,12 +484,17 @@ public class Mainframe extends JFrame implements WirelessListener {
 				tuozhuaibuffx[i] = tubiaos[i].getPointx();
 				tuozhuaibuffy[i] = tubiaos[i].getPointy();
 			}
-
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 地图点击放大
+	 *
+	 */
 	private class Dianjifangdalistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			dianjifangda = !dianjifangda;
 			dianjisuoxiao = false;
 			tuozhuai = false;
@@ -469,8 +510,14 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 地图点击缩小
+	 *
+	 */
 	private class Dianjisuoxiaolistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			dianjisuoxiao = !dianjisuoxiao;
 			dianjifangda = false;
 			tuozhuai = false;
@@ -486,15 +533,22 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
+	/**
+	 * @author Administrator
+	 * 选中的靶子动作
+	 *
+	 */
 	private class Dongzuolistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
-			// 动作
+			// TODO 自动生成的方法存根
 			if (yunxinstate) {
 				String string = getXuanzhong();// 获取选中的靶子
+				//String stringbianhao=getXuanzhongbiaohao();
 				int[] a = Toolsfunction.str2num(string);// 将选中的靶子转化为数组形式
 				Bazhi[] bazhisijk = new Bazhi[a.length];
 				for (int i = 0; i < a.length; i++) {
-					bazhisijk[i] = bazhis[a[i] - 1];
+					bazhisijk[i] = bazhis[a[i]];
+					uiEventListener.processStandEvent(TargetsCollection.INSTANCE.get(a[i]));//发送靶子动作命令
 				}
 				//commandlistenerInterface.bazhisAction(bazhisijk);
 			}
@@ -509,6 +563,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 	 */
 	private class Suofanglistener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			// TODO 自动生成的方法存根
 			if (zinout == 0) {
 				tmuiControlPanel.setVisible(false);
 				tmuiTargetStatusPanel.setVisible(false);
@@ -526,7 +581,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 	private class Mymouse extends MouseAdapter {
 		@Override
 		public void mouseReleased(MouseEvent e) {
-
+			// TODO 自动生成的方法存根
 			super.mouseReleased(e);
 			huitupanel.setPainwitch(0);
 			huitupanel.displayzhengti(tubiaos, pointnum);
@@ -538,6 +593,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 
 		@Override
 		public void mouseDragged(MouseEvent e) {
+			// TODO 自动生成的方法存根
 			if (tuozhuai) {
 				for (int i = 0; i < pointnum; i++) {
 					tubiaos[i].setPointx(tuozhuaibuffx[i] + e.getX() - x);
@@ -637,6 +693,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 									((Bazhi) (tubiaos[i])).setSuodingyf(0);
 									((Bazhi) (tubiaos[i])).setstateDongzuo();
 									//commandlistenerInterface.bazhiAction(((Bazhi) (tubiaos[i])));
+									uiEventListener.processStandEvent(TargetsCollection.INSTANCE.get(((Bazhi) (tubiaos[i])).getBianhao()));
 								} else if (((Bazhi) (tubiaos[i])).getSuodingyf() == 0
 										|| ((Bazhi) (tubiaos[i])).getSuodingyf() == 2) {
 									System.out.println("不允许操作");
@@ -661,6 +718,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 
 		@Override
 		public void mouseMoved(MouseEvent e) {
+			// TODO 自动生成的方法存根
 			if (biaoqianstate) {
 				if (tubiaos[buffbianhao] instanceof Bazhi) {
 					if ((e.getX() > (bfx - 3)) && (e.getX() < (bfx + 57)) && (e.getY() > bfy - 62)
@@ -687,6 +745,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
+			// TODO 自动生成的方法存根
 			int i;
 			int bianhao = 0;
 			buffbianhao = 0;
@@ -726,6 +785,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 	 */
 	@Override
 	public void onDataReceived() {
+		// TODO 自动生成的方法存根
 		int a=TargetsCollection.INSTANCE.getCount();
 		bazhis=new Bazhi[a];
 		for(int i=0;i<a;i++){
@@ -741,7 +801,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 			bazhis[i].setIsdazhong(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false);
 			bazhis[i].setIsweidazhong(!(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false));
 			bazhis[i].setZuhao(0);
-			bazhis[i].setSeqbianhao(0);//靶子序列编号
+			bazhis[i].setSeqbianhao(i);//靶子序列编号
 			bazhis[i].setHit(0);//
 			bazhis[i].setLight(0);//灯光
 			bazhis[i].setDebug(null);//调试数据
@@ -754,6 +814,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 			dabarenyuans[i].setPointx((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLat()));
 			dabarenyuans[i].setPointy((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLon()));
 			dabarenyuans[i].setXingming(TraineeEntityCollection.INSTANCE.get(i).getName());
+			dabarenyuans[i].setSeqbianhao(i);
 			dabarenyuans[i].setDebuge(null);
 			dabarenyuans[i].setAlert(null);
 		}
@@ -768,7 +829,10 @@ public class Mainframe extends JFrame implements WirelessListener {
 		}
 	}
 
-	private String getXuanzhong() {
+	/**
+	 * @return 返回选中的靶子的bianhao
+	 */
+	private String getXuanzhongbiaohao() {
 		int j = 0;
 		int[] k = new int[100];
 		for (int i = 0; i < pointnum; i++) {
@@ -783,6 +847,30 @@ public class Mainframe extends JFrame implements WirelessListener {
 		String strbazhi = "";
 		for (int i = 0; i < j; i++) {
 			str = str + String.valueOf(((Bazhi) (tubiaos[k[i]])).getBianhao()) + ",";
+		}
+		if (j > 0) {
+			strbazhi = str.substring(0, str.length() - 1);
+		}
+		return strbazhi;
+	}
+	/**
+	 * @return 返回选中的靶子的seqbianhao
+	 */
+	private String getXuanzhong() {
+		int j = 0;
+		int[] k = new int[100];
+		for (int i = 0; i < pointnum; i++) {
+			if (tubiaos[i] instanceof Bazhi) {
+				if (((Bazhi) (tubiaos[i])).isIsxuanzhong() == true) {
+					k[j] = i;
+					j++;
+				}
+			}
+		}
+		String str = "";
+		String strbazhi = "";
+		for (int i = 0; i < j; i++) {
+			str = str + String.valueOf(((Bazhi) (tubiaos[k[i]])).getSeqbianhao()) + ",";
 		}
 		if (j > 0) {
 			strbazhi = str.substring(0, str.length() - 1);
@@ -892,6 +980,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 			if (data[i][2] == 1) {
 				bazhis[j]=new Bazhi();
 				bazhis[j].setBianhao(data[i][3]);
+				bazhis[j].setSeqbianhao(j);
 				bazhis[j].setSuodingyf(1);
 				bazhis[j].setPointx(data[i][0]);
 				bazhis[j].setPointy(data[i][1]);
@@ -903,6 +992,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 				j++;
 			} else {
 				dabarenyuans[k] = new Dabarenyuan();
+				dabarenyuans[k].setSeqbianhao(k);
 				dabarenyuans[k].setBianhao(k);
 				dabarenyuans[k].setPointx(data[i][0]);
 				dabarenyuans[k].setPointy(data[i][1]);
@@ -913,7 +1003,6 @@ public class Mainframe extends JFrame implements WirelessListener {
 		bazhishu = j;
 		dabarenyuanshu = k;
 	}
-
 }
 
 class Reflesh extends Thread {

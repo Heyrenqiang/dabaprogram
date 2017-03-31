@@ -101,8 +101,8 @@ public class DefineJpanel extends JPanel implements ActionListener{
 	}
 	public DefineJpanel(int zushu,Bazhiz bazhiz) {	
 		this.zushu=zushu;
-		this.pingbanh=bazhiz.getPingbanhao();
-		this.bazhi=bazhiz.getBazhisnum();
+		this.pingbanh=bazhiz.getGroupID();
+		this.bazhi=bazhiz.getBazhisID();
 		canshu2str(zushu,pingbanh,bazhi,bazhi.length);
 		this.setPreferredSize(new Dimension(260, 58));
 		this.setBorder(new LineBorder(Color.LIGHT_GRAY));

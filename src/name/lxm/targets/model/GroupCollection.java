@@ -6,10 +6,7 @@ import java.util.Hashtable;
 public class GroupCollection {
 	public static GroupCollection INSTANCE = new GroupCollection();
 	
-	
 	private Hashtable<Integer, GroupEntity> pool = new Hashtable<>();
-	
-	
 	
 	private GroupCollection(){}
 	

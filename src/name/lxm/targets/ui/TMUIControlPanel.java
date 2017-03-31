@@ -35,6 +35,16 @@ public class TMUIControlPanel extends JPanel {
 	private Timeoutthread timeoutthread;
 	private JTable table;
 	private JTable table_1;
+	private JButton savegroupButton;
+
+	public JButton getSavegroupButton() {
+		return savegroupButton;
+	}
+
+	public void setSavegroupButton(JButton savegroupButton) {
+		this.savegroupButton = savegroupButton;
+	}
+
 	public JScrollPane getScrollPane() {
 		return scrollPane;
 	}
@@ -77,64 +87,68 @@ public class TMUIControlPanel extends JPanel {
 		panel_1.add(panel_8, BorderLayout.SOUTH);
 		panel_8.setLayout(new GridLayout(0, 2, 0, 0));
 
-		JButton btnNewButton_1 = new JButton("添加分组");
-		panel_8.add(btnNewButton_1);
+		JButton tianjiafenzuBtn = new JButton("添加分组");
+		panel_8.add(tianjiafenzuBtn);
 
-		JButton btnNewButton = new JButton("保存分组");
-		btnNewButton.addActionListener(new ActionListener() {
+		savegroupButton = new JButton("保存分组");
+		// 点击保存分组按钮后将会做一下操作，系统进入就绪状态，更新分组信息到通讯模块
+		savegroupButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (Mainframe.chushihuastate) {
 					if (Mainframe.bazhishu == Guanlifenzu.getGroupedbazhinum()) {
 						Mainframe.setsysstate(Mainframe.jiuxustaten);
+						Guanlifenzu.groupinfoUpdate();// 更新分组信息到通讯模块
 						Mainframe.qidongbutton.setEnabled(true);
 						timeoutthread = new Timeoutthread();
 						timeoutthread.start();
-						//Mainframe.commandlistenerInterface.systemReady();
+						// Mainframe.commandlistenerInterface.systemReady();
 						Mainframe.commandstatelistener.sysReady();
+						savegroupButton.setEnabled(false);// 保存按钮不可用
 					}
 				}
 			}
 		});
-		panel_8.add(btnNewButton);
-		btnNewButton_1.addActionListener(new ActionListener() {
+		panel_8.add(savegroupButton);
+		// 当添加分组按钮按下时作以下操作，选择要添加分组的靶子并添加分组
+		tianjiafenzuBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				Tianjiafenzumsgbox tianjiafenzumsgbox = new Tianjiafenzumsgbox(Guanlifenzu.getZushu());
-				tianjiafenzumsgbox.setVisible(true);
-				tianjiafenzumsgbox.getButton().addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						tianjiafenzumsgbox.dispose();
-						// System.out.println("guangbudiao");
-						// dispose();
-					}
-				});
-				tianjiafenzumsgbox.getBtnNewButton().addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if (Mainframe.chushihuastate) {
-							String[] mStrings = tianjiafenzumsgbox.getTextField().getText().split(",");
-							System.out.println(mStrings.length);
-							if (!mStrings[0].equals("")) {
-								int j = mStrings.length;
-								int[] a = new int[mStrings.length];
-								for (int i = 0; i < mStrings.length; i++) {
-									a[i] = Integer.parseInt(mStrings[i]);
-								}
-								Bazhi[] bazhiijk = new Bazhi[j];
-								for (int i = 0; i < j; i++) {
-									bazhiijk[i] = Mainframe.bazhis[a[i] - 1];
-								}
-								Guanlifenzu.creatfenzu(bazhiijk);
-								// Guanlifenzu.creatnewpanel();
-								Guanlifenzu.showpanel();
-							} else {
-								Bazhi[] bazhikji = new Bazhi[0];
-								Guanlifenzu.creatfenzu(bazhikji);
-								// Guanlifenzu.creatnewpanel();
-								Guanlifenzu.showpanel();
-							}
+				if (Mainframe.chushihuastate) {
+					Tianjiafenzumsgbox tianjiafenzumsgbox = new Tianjiafenzumsgbox(Guanlifenzu.getZushu());
+					tianjiafenzumsgbox.setVisible(true);
+					tianjiafenzumsgbox.getButton().addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
 							tianjiafenzumsgbox.dispose();
 						}
-					}
-				});
+					});
+					tianjiafenzumsgbox.getBtnNewButton().addActionListener(new ActionListener() {
+						public void actionPerformed(ActionEvent e) {
+							if (Mainframe.chushihuastate) {
+								String[] mStrings = tianjiafenzumsgbox.getTextField().getText().split(",");
+								System.out.println(mStrings.length);
+								if (!mStrings[0].equals("")) {
+									int j = mStrings.length;
+									int[] a = new int[mStrings.length];
+									for (int i = 0; i < mStrings.length; i++) {
+										a[i] = Integer.parseInt(mStrings[i]);
+									}
+									Bazhi[] bazhiijk = new Bazhi[j];
+									for (int i = 0; i < j; i++) {
+										bazhiijk[i] = Mainframe.bazhis[a[i] - 1];
+									}
+									Guanlifenzu.creatfenzu(bazhiijk);
+									// Guanlifenzu.creatnewpanel();
+									Guanlifenzu.showpanel();
+								} else {
+									Bazhi[] bazhikji = new Bazhi[0];
+									Guanlifenzu.creatfenzu(bazhikji);
+									// Guanlifenzu.creatnewpanel();
+									Guanlifenzu.showpanel();
+								}
+								tianjiafenzumsgbox.dispose();
+							}
+						}
+					});
+				}
 			}
 		});
 		// pa
@@ -182,9 +196,11 @@ public class TMUIControlPanel extends JPanel {
 
 	}
 }
+
 class Timeoutthread extends Thread {
 	public Timeoutthread() {
 	}
+
 	public void run() {
 		while (!Thread.currentThread().isInterrupted()) {
 			System.out.println("进入就绪状态请启动");
@@ -199,7 +215,7 @@ class Timeoutthread extends Thread {
 			Mainframe.setsysstate(Mainframe.shuimianstaten);
 			Mainframe.qidongbutton.setText("激活");
 			System.out.println("系统进入睡眠状态，请激活");
-			//Mainframe.commandlistenerInterface.systemSleep();
+			// Mainframe.commandlistenerInterface.systemSleep();
 			Mainframe.commandstatelistener.sysSleep();
 			break;
 		}

@@ -6,13 +6,15 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
 
+import name.lxm.targets.model.GroupCollection;
+import name.lxm.targets.model.GroupEntity;
+
 public class Guanlifenzu {
 	private static int zushu = 0;
 	private static int[] groupedbazhis = new int[1000];
 	private static int groupedbazhinum;
 	private static DefineJpanel[] defineJpanels = new DefineJpanel[1000];
 	private static Bazhiz[] bazhizs = new Bazhiz[100];
-
 	public static int[] getGroupedbazhis() {
 		return groupedbazhis;
 	}
@@ -36,9 +38,18 @@ public class Guanlifenzu {
 	public static void setBazhizs(Bazhiz[] bazhizs) {
 		Guanlifenzu.bazhizs = bazhizs;
 	}
+	public static int getZushu() {
+		return zushu;
+	}
 
+	public static void setZushu(int zushu) {
+		Guanlifenzu.zushu = zushu;
+	}
+
+	/**
+	 * 创建一个新的靶子组面板
+	 */
 	public static void creatnewpanel() {
-
 		defineJpanels[zushu] = new DefineJpanel(zushu, bazhizs[zushu]);
 		defineJpanels[zushu].getButton_1()
 				.addActionListener(new ActionListener() {
@@ -52,7 +63,6 @@ public class Guanlifenzu {
 								break;
 							}
 						}
-						//System.out.println(i);
 						Guanlifenzu.deletefenzhu(i);
 						Guanlifenzu.deletepanel(i);
 						Guanlifenzu.showpanel();
@@ -60,6 +70,9 @@ public class Guanlifenzu {
 				});
 	}
 
+	/**
+	 * 更新靶子组面板
+	 */
 	public static void updatepanel(int a) {
 		defineJpanels[a] = new DefineJpanel(a, bazhizs[a]);
 		defineJpanels[a].getButton_1().addActionListener(new ActionListener() {
@@ -79,9 +92,11 @@ public class Guanlifenzu {
 				Guanlifenzu.showpanel();
 			}
 		});
-
 	}
 
+	/**
+	 * 创建分组
+	 */
 	public static void creatfenzu(Bazhi[] bazhis) {
 		Definedata definedata;
 		definedata = Toolsfunction.splitGroupedornot(bazhis);
@@ -93,10 +108,7 @@ public class Guanlifenzu {
 			yesorno = JOptionPane.showConfirmDialog(null,
 					string + "已经被分组,是否继续？", "", JOptionPane.YES_NO_OPTION);
 		}
-		// System.out.println(yesorno);
 		if (yesorno == 0 || definedata.getBazhis4().length == 0) {
-			// 点击messagebox的确定或者没有选择到重复的靶子时
-			// System.out.println("chuasdhua");
 			bazhizs[zushu + 1] = new Bazhiz(zushu + 1, definedata.getBazhis3());
 			for (int i = 0; i < definedata.getBazhis3().length; i++) {
 				definedata.getBazhis3()[i].setGroup(zushu + 1);
@@ -108,6 +120,9 @@ public class Guanlifenzu {
 		}
 	}
 
+	/**
+	 * 退出分组
+	 */
 	public static void tuichuFenzhu(Bazhi[] bazhis) {
 		int yesorno = 10;
 		Definedata definedata;
@@ -138,6 +153,9 @@ public class Guanlifenzu {
 		}
 	}
 
+	/**
+	 * 添加靶子到已经创建的组
+	 */
 	public static void tianjiaDaozu(int a, Bazhi[] bazhis) {
 		Definedata definedata;
 		definedata = Toolsfunction.splitGroupedornot(bazhis);
@@ -160,6 +178,9 @@ public class Guanlifenzu {
 		}
 	}
 
+	/**
+	 * 删除分组
+	 */
 	public static void deletefenzhu(int a) {
 		/// 注意：bazhizs[]是从bazhizs[1]开始的
 		int[] z = new int[bazhizs[a + 1].getBazhis().length];
@@ -174,6 +195,9 @@ public class Guanlifenzu {
 		zushu--;
 	}
 
+	/**
+	 * 删除靶子号
+	 */
 	public static void deledebazhihao(int[] a) {
 		boolean existed = false;
 		int w = 0;
@@ -196,14 +220,6 @@ public class Guanlifenzu {
 		groupedbazhinum = w;
 	}
 
-	public static int getZushu() {
-		return zushu;
-	}
-
-	public static void setZushu(int zushu) {
-		Guanlifenzu.zushu = zushu;
-	}
-
 	public static String num2str(int[] a, int b) {
 		String str = "";
 		for (int i = 0; i < b; i++) {
@@ -212,6 +228,9 @@ public class Guanlifenzu {
 		return str.substring(0, str.length() - 1);
 	}
 
+	/**
+	 * 显示分组界面
+	 */
 	public static void showpanel() {
 		Mainframe.tmuiControlPanel.getPanel_7().removeAll();
 		Mainframe.tmuiControlPanel.getPanel_7().repaint();
@@ -226,6 +245,9 @@ public class Guanlifenzu {
 
 	}
 
+	/**
+	 * 删除靶子组界面
+	 */
 	public static void deletepanel(int a) {
 		for (int i = a+1; i < zushu + 1; i++) {
 			defineJpanels[i] = defineJpanels[i + 1];
@@ -235,7 +257,16 @@ public class Guanlifenzu {
 		defineJpanels[zushu + 1] = null;
 	}
 
-	// @Override
+	/**
+	 * 将界面部分的靶子分组信息更新到通讯模块
+	 */
+	public static void groupinfoUpdate(){
+		for(int i=0;i<zushu;i++){
+			GroupEntity groupEntity=new GroupEntity(bazhizs[i+1].getGroupID(), bazhizs[i+1].getPadID(), bazhizs[i+1].getGroupName());
+			GroupCollection.INSTANCE.put(groupEntity);
+		}
+	}
+	//在靶子组界面的动作按钮坐下后作以下操作，让组内的所有靶子动作
 	public static void actionPerformed(ActionEvent e) {
 		// TODO 自动生成的方法存根
 		int i;
