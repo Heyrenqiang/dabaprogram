@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import name.lxm.targets.model.GroupCollection;
 import name.lxm.targets.model.GroupEntity;
+import name.lxm.targets.model.TargetsCollection;
 
 public class Guanlifenzu {
 	private static int zushu = 0;
@@ -15,6 +16,10 @@ public class Guanlifenzu {
 	private static int groupedbazhinum;
 	private static DefineJpanel[] defineJpanels = new DefineJpanel[1000];
 	private static Bazhiz[] bazhizs = new Bazhiz[100];
+	private static UIEventListener uiEventListener;
+	public static void adduiEventListener(UIEventListener listener){
+		uiEventListener=listener;
+	}
 	public static int[] getGroupedbazhis() {
 		return groupedbazhis;
 	}
@@ -280,6 +285,7 @@ public class Guanlifenzu {
 						bazhizs[i + 1].getBazhis()[j].setIsxuanzhong(false);
 						bazhizs[i + 1].getBazhis()[j].setIsdazhong(false);
 						bazhizs[i + 1].getBazhis()[j].setSuodingyf(0);
+						uiEventListener.processStandEvent(TargetsCollection.INSTANCE.get(bazhizs[i+1].getBazhis()[j].getSeqbianhao()));
 					}
 				}
 				Mainframe.huitupanel.displayzhengti(Mainframe.tubiaos, Mainframe.pointnum);

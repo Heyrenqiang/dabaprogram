@@ -7,8 +7,6 @@ import name.lxm.targets.interfaces.Commandstatelistener;
 import name.lxm.targets.interfaces.Groupinfoupdatelistener;
 import name.lxm.targets.interfaces.WirelessListener;
 import name.lxm.targets.model.TargetsCollection;
-import name.lxm.targets.model.TraineeEntityCollection;
-
 import java.awt.event.*;
 import java.io.BufferedReader;
 import java.io.File;
@@ -693,7 +691,7 @@ public class Mainframe extends JFrame implements WirelessListener {
 									((Bazhi) (tubiaos[i])).setSuodingyf(0);
 									((Bazhi) (tubiaos[i])).setstateDongzuo();
 									//commandlistenerInterface.bazhiAction(((Bazhi) (tubiaos[i])));
-									uiEventListener.processStandEvent(TargetsCollection.INSTANCE.get(((Bazhi) (tubiaos[i])).getBianhao()));
+									uiEventListener.processStandEvent(TargetsCollection.INSTANCE.get(((Bazhi) (tubiaos[i])).getSeqbianhao()));
 								} else if (((Bazhi) (tubiaos[i])).getSuodingyf() == 0
 										|| ((Bazhi) (tubiaos[i])).getSuodingyf() == 2) {
 									System.out.println("不允许操作");
@@ -786,47 +784,48 @@ public class Mainframe extends JFrame implements WirelessListener {
 	@Override
 	public void onDataReceived() {
 		// TODO 自动生成的方法存根
-		int a=TargetsCollection.INSTANCE.getCount();
-		bazhis=new Bazhi[a];
-		for(int i=0;i<a;i++){
-			bazhis[i].setBianhao(TargetsCollection.INSTANCE.get(i).getID());//靶子编号
-			bazhis[i].setChengji(TargetsCollection.INSTANCE.get(i).getGrade());//靶子成绩
-			bazhis[i].setDianliang(TargetsCollection.INSTANCE.get(i).getVoltage());//电量
-			bazhis[i].setGroup(TargetsCollection.INSTANCE.get(i).getGroup());//所在组
-			bazhis[i].setPointx((int)(TargetsCollection.INSTANCE.get(i).getGps().getLat()));//x坐标
-			bazhis[i].setPointy((int)(TargetsCollection.INSTANCE.get(i).getGps().getLon()));//y坐标
-			bazhis[i].setPose(TargetsCollection.INSTANCE.get(i).getStatus());//靶子姿势
-			bazhis[i].setQiya(TargetsCollection.INSTANCE.get(i).getPresure());//气压
-			bazhis[i].setTemprature(TargetsCollection.INSTANCE.get(i).getTemprature());//温度
-			bazhis[i].setIsdazhong(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false);
-			bazhis[i].setIsweidazhong(!(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false));
-			bazhis[i].setZuhao(0);
-			bazhis[i].setSeqbianhao(i);//靶子序列编号
-			bazhis[i].setHit(0);//
-			bazhis[i].setLight(0);//灯光
-			bazhis[i].setDebug(null);//调试数据
-			bazhis[i].setAlert(null);//报警数据
-			}
-		int b=TraineeEntityCollection.INSTANCE.getSize();
-		dabarenyuans=new Dabarenyuan[b];
-		for(int i=0;i<b;i++){
-			dabarenyuans[i].setBianhao(TraineeEntityCollection.INSTANCE.get(i).getID());
-			dabarenyuans[i].setPointx((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLat()));
-			dabarenyuans[i].setPointy((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLon()));
-			dabarenyuans[i].setXingming(TraineeEntityCollection.INSTANCE.get(i).getName());
-			dabarenyuans[i].setSeqbianhao(i);
-			dabarenyuans[i].setDebuge(null);
-			dabarenyuans[i].setAlert(null);
-		}
-		pointnum=a+b;
-		tubiaos=new Tubiao[pointnum];
-		int k;
-		for(k=0;k<a;k++){
-			tubiaos[k]=bazhis[k];
-		}
-		for(int j=0;j<b;j++){
-			tubiaos[k+j]=dabarenyuans[j];
-		}
+//		int a=TargetsCollection.INSTANCE.getCount();
+//		bazhis=new Bazhi[a];
+//		for(int i=0;i<a;i++){
+//			bazhis[i].setBianhao(TargetsCollection.INSTANCE.get(i).getID());//靶子编号
+//			bazhis[i].setChengji(TargetsCollection.INSTANCE.get(i).getGrade());//靶子成绩
+//			bazhis[i].setDianliang(TargetsCollection.INSTANCE.get(i).getVoltage());//电量
+//			bazhis[i].setGroup(TargetsCollection.INSTANCE.get(i).getGroup());//所在组
+//			bazhis[i].setPointx((int)(TargetsCollection.INSTANCE.get(i).getGps().getLat()));//x坐标
+//			bazhis[i].setPointy((int)(TargetsCollection.INSTANCE.get(i).getGps().getLon()));//y坐标
+//			bazhis[i].setPose(TargetsCollection.INSTANCE.get(i).getStatus());//靶子姿势
+//			bazhis[i].setQiya(TargetsCollection.INSTANCE.get(i).getPresure());//气压
+//			bazhis[i].setTemprature(TargetsCollection.INSTANCE.get(i).getTemprature());//温度
+//			bazhis[i].setIsdazhong(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false);
+//			bazhis[i].setIsweidazhong(!(TargetsCollection.INSTANCE.get(i).getStatus()>0?true:false));
+//			bazhis[i].setZuhao(0);
+//			bazhis[i].setSeqbianhao(i);//靶子序列编号
+//			bazhis[i].setHit(0);//
+//			bazhis[i].setLight(0);//灯光
+//			bazhis[i].setDebug(null);//调试数据
+//			bazhis[i].setAlert(null);//报警数据
+//			}
+//		int b=TraineeEntityCollection.INSTANCE.getSize();
+//		dabarenyuans=new Dabarenyuan[b];
+//		for(int i=0;i<b;i++){
+//			dabarenyuans[i].setBianhao(TraineeEntityCollection.INSTANCE.get(i).getID());
+//			dabarenyuans[i].setPointx((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLat()));
+//			dabarenyuans[i].setPointy((int)(TraineeEntityCollection.INSTANCE.get(i).getGps().getLon()));
+//			dabarenyuans[i].setXingming(TraineeEntityCollection.INSTANCE.get(i).getName());
+//			dabarenyuans[i].setSeqbianhao(i);
+//			dabarenyuans[i].setDebuge(null);
+//			dabarenyuans[i].setAlert(null);
+//		}
+//		pointnum=a+b;
+//		tubiaos=new Tubiao[pointnum];
+//		int k;
+//		for(k=0;k<a;k++){
+//			tubiaos[k]=bazhis[k];
+//		}
+//		for(int j=0;j<b;j++){
+//			tubiaos[k+j]=dabarenyuans[j];
+//		}
+		System.out.println("数据更新");
 	}
 
 	/**

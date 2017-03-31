@@ -1,12 +1,10 @@
 ﻿package name.lxm.targets.ui.simulation;
 
 import name.lxm.targets.interfaces.WirelessListener;
-import name.lxm.targets.ui.Tubiao;
 
 public class Dataupdate {
 	public Dataupdate(){
 	}
-	private Tubiao[] tubiaos;
 	private WirelessListener wirelessListener;
 	public void start() {
 		new Thread(new Runnable() {

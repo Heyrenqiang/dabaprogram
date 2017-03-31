@@ -8,6 +8,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 //import dabaxunlian.Commandsending;
 //import dabaxunlian.Datatest;
 import name.lxm.targets.exception.WrongFrameFormatException;
+import name.lxm.targets.ui.Guanlifenzu;
 import name.lxm.targets.ui.Mainframe;
 import name.lxm.targets.ui.simulation.Communicationmoduletest;
 import name.lxm.targets.ui.simulation.Dataupdate;
@@ -130,15 +131,13 @@ public class Utility {
 			e.printStackTrace();
 		}
 		mainframe=new Mainframe("智能目标显示系统");
-//		Datatest datatest=new Datatest();
-//		Commandsending commandsending=new Commandsending();
-//		mainform.addlistener(commandsending);
-//		datatest.setActionListener(mainform);
 		
 		Dataupdate dataupdate=new Dataupdate();
 		Communicationmoduletest communicationmoduletest=new Communicationmoduletest();
 		mainframe.addCommandstateListener(communicationmoduletest);
-		//dataupdate.addActionListener(mainframe);
+		dataupdate.addActionListener(mainframe);
+		Guanlifenzu.adduiEventListener(TMApplication.INSTANCE);
+		dataupdate.start();
 		
 		GPSData gps = fakeGPS();
 		System.out.println(gps);
