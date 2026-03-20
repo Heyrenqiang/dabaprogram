@@ -1,0 +1,6 @@
+{
+	"default-token": "e45a5780-b848-4b19-ac82-775879678afc",
+	"server_port":4444,
+	"router_ip": "192.168.1.2",
+	"router_port":"6666"
+}

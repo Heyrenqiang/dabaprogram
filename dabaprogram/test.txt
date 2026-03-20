@@ -1,0 +1,4 @@
+http://localhost:4444/login?{"padid":1,"action":"login", "pad-name":"No1", "token":"e45a5780-b848-4b19-ac82-775879678afc"}
+http://localhost:4444/show?{"action":"showall"}
+http://localhost:4444/action?{"padid":1, "token":"1111", "action":"activate", "targets":[2,3,4]}
+http://localhost:4444/update?{"action":"update","token":"","padid":1}
